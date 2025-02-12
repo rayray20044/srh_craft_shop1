@@ -23,25 +23,7 @@ class CategoriesSection extends StatelessWidget {
     return Column( //layout of the widget
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "CATEGORIES",
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 24,
-                color: Color(0xFFE41B13),
-              ),
-            ),
-            const SizedBox(height: 4), // Space between the text and the line
-            Container(
-              height: 2, // Thickness of the line
-              width: 350, // Adjust width as needed
-              color: Color(0xFFE41B13), // Line color matching the text
-            ),
-          ],
-        ),
+
 
         const SizedBox(height: 8),
         Wrap(

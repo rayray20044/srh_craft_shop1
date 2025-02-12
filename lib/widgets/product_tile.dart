@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/product_model.dart';
-import 'package:srhcraftshop/widgets/product_details.dart';
+import 'package:srhcraftshop/widgets/product_details_page.dart';
 class ProductTile extends StatelessWidget {
   final Product product;
 
