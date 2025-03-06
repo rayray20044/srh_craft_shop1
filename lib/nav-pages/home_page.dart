@@ -12,38 +12,39 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Product> allProducts = [];
-  List<Product> filteredProducts = [];
-  bool isLoading = true;
-  String searchQuery = '';
+  List<Product> allProducts = []; // stores all products fetched from API
+  List<Product> filteredProducts = []; // stores products filtered by search
+  bool isLoading = true; // if data is still loading
+  String searchQuery = ''; // stores the search query entered by the user
 
   @override
   void initState() {
     super.initState();
-    fetchProducts();
+    fetchProducts(); // fetches products when the page loads
   }
 
+  // function to fetch products from API
   Future<void> fetchProducts() async {
     try {
-      final products = await ProductService.fetchProducts();
+      final fetchedProducts = await ProductService.fetchProducts();
       setState(() {
-        allProducts = products;
-        filteredProducts = products;
-        isLoading = false;
+        allProducts = fetchedProducts; // stores all fetched products
+        filteredProducts = allProducts; // initially, all products are displayed
+        isLoading = false; // sets loading to false when data is ready
       });
     } catch (e) {
       setState(() {
-        isLoading = false;
+        isLoading = false; // stops loading if fetching fails
       });
-      debugPrint('Error fetching products: $e');
     }
   }
 
+  // function to update the displayed products based on search input
   void updateSearch(String query) {
     setState(() {
       searchQuery = query.toLowerCase();
       filteredProducts = allProducts
-          .where((product) => product.title.toLowerCase().contains(searchQuery))
+          .where((product) => product.name.toLowerCase().contains(searchQuery)) // filters products based on search
           .toList();
     });
   }
@@ -54,16 +55,19 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          _buildAppBar(context),
-          _buildCategoriesHeader(),
-          CategoriesSection(),
-          _buildFeaturedHeader(),
-          _buildFeaturedProductGrid(),
+          _buildAppBar(context), //  app bar
+          _buildCategoriesHeader(), //  categories header
+          CategoriesSection(), // displays category
+          _buildFeaturedHeader(), // featured items header
+          Expanded(
+            child: _buildFeaturedProductGrid(), // fearured prodcts in a grid
+          ),
         ],
       ),
     );
   }
 
+  // custom app bar with search functionality
   Widget _buildAppBar(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(
@@ -82,28 +86,29 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+
+          //back button row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               GestureDetector(
                 onTap: () {
-                  Navigator.pushReplacementNamed(context, '/');
+                  Navigator.pushReplacementNamed(context, '/'); // navigates  to home screen
                 },
                 child: Icon(Icons.arrow_back, color: Colors.white),
-              ),
-              Spacer(),
-              CircleAvatar(
-                radius: 25,
-                backgroundColor: Colors.grey[300],
               ),
             ],
           ),
           SizedBox(height: 10),
+
+          // greeting text
           Text(
-            'Hello, Rayan!',
+            'Welcome!',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: Colors.white),
           ),
           SizedBox(height: 15),
+
+          //search bar
           Container(
             padding: EdgeInsets.symmetric(horizontal: 15),
             decoration: BoxDecoration(
@@ -116,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(width: 10),
                 Expanded(
                   child: TextField(
-                    onChanged: updateSearch,
+                    onChanged: updateSearch, //search result irl
                     decoration: InputDecoration(
                       hintText: 'Search what you need',
                       border: InputBorder.none,
@@ -132,26 +137,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // function to build the categories section header
   Widget _buildCategoriesHeader() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "CATEGORIES",
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 20,
-              color: Color(0xFFE41B13),
-            ),
-          ),
-          Divider(color: Colors.red, thickness: 2),
-        ],
-      ),
     );
   }
 
+  // function to build the featured items section header
   Widget _buildFeaturedHeader() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -159,39 +152,36 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "FEATURED ITEMS",
+            "FEATURED ITEMS", // title of the section
             style: TextStyle(
               fontWeight: FontWeight.w400,
               fontSize: 20,
-              color: Color(0xFFE41B13),
+              color: Color(0xFFEA6C6C), // sets text color
             ),
           ),
-          Divider(color: Colors.red, thickness: 2),
+          Divider(color: Colors.red, thickness: 2), // red divider line
         ],
       ),
     );
   }
 
+  //function for the grid layout products
   Widget _buildFeaturedProductGrid() {
-    return Expanded(
-      child: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : GridView.builder(
-        padding: EdgeInsets.all(10),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: 0.7,
-        ),
-        itemCount: filteredProducts.length,
-        itemBuilder: (context, index) {
-          var product = filteredProducts[index];
-          return ProductTile(product: product);
-        },
+    return isLoading
+        ? Center(child: CircularProgressIndicator())
+        : GridView.builder(
+      padding: EdgeInsets.all(10),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 0.7,
       ),
+      itemCount: filteredProducts.length,
+      itemBuilder: (context, index) {
+        var product = filteredProducts[index];
+        return ProductTile(product: product);
+      },
     );
   }
 }
-
-

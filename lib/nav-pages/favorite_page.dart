@@ -1,44 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:srhcraftshop/models/product_model.dart';
-//import 'package:srhcraftshop/services/favorite_provider.dart';
 import 'package:srhcraftshop/provider/favorite_provider.dart';
-
 
 class FavoritePage extends StatelessWidget {
   const FavoritePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final favoriteProvider = Provider.of<FavoriteProvider>(context);
-    final favoriteProducts = favoriteProvider.favorites; // Get favorited products
+    final favoriteProvider = Provider.of<FavoriteProvider>(context); //  access to the favorite provider
+    final favoriteProducts = favoriteProvider.favorites; // gets  list of favorits
 
     return Scaffold(
+      backgroundColor: const Color(0xFFE9E9E9),
       body: Column(
         children: [
-          // Custom App Bar
+
+          // top bar
           Container(
-            height: 120,
+            padding: const EdgeInsets.only(top: 80, bottom: 20),
             decoration: const BoxDecoration(
-              color: Color(0xFFBC5D5D), // Match header color
+              color: Color(0xFFBC5D5D),
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),
               ),
             ),
-            alignment: Alignment.center,
-            child: const Text(
-              "FAVORITES",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                letterSpacing: 1.5,
+            child: const Center(
+              child: Text(
+                'MY FAVORITES',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFFE8E5E8),
+                ),
               ),
             ),
           ),
 
-          // Display favorites
+          // favorite products or a message if empty
           Expanded(
             child: favoriteProducts.isEmpty
                 ? const Center(
@@ -50,15 +49,15 @@ class FavoritePage extends StatelessWidget {
                 : Padding(
               padding: const EdgeInsets.all(8.0),
               child: GridView.builder(
-                itemCount: favoriteProducts.length,
+                itemCount: favoriteProducts.length, // number of  favorits
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // Two columns for a clean layout
+                  crossAxisCount: 2,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
-                  childAspectRatio: 0.75, // Adjusted for card shape
+                  childAspectRatio: 0.75,
                 ),
                 itemBuilder: (context, index) {
-                  final product = favoriteProducts[index];
+                  final product = favoriteProducts[index]; //gets the product at index
 
                   return Card(
                     elevation: 3,
@@ -68,7 +67,8 @@ class FavoritePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Product Image
+
+                        // product image
                         Expanded(
                           child: ClipRRect(
                             borderRadius: const BorderRadius.only(
@@ -76,18 +76,26 @@ class FavoritePage extends StatelessWidget {
                               topRight: Radius.circular(12),
                             ),
                             child: Image.network(
-                              product.thumbnail ?? 'https://via.placeholder.com/150',
+                              product.thumbnail != null && product.thumbnail!.isNotEmpty
+                                  ? product.thumbnail!
+                                  : 'https://via.placeholder.com/150', //  placeholder if no image
                               fit: BoxFit.cover,
                               width: double.infinity,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.network(
+                                  'https://via.placeholder.com/150',
+                                  fit: BoxFit.cover,
+                                );
+                              },
                             ),
                           ),
                         ),
 
-                        // Product Info & Heart Button
+                        //bottom section
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.grey[400], // Match the gray background in the design
+                            color: Colors.grey[400],
                             borderRadius: const BorderRadius.only(
                               bottomLeft: Radius.circular(12),
                               bottomRight: Radius.circular(12),
@@ -96,35 +104,36 @@ class FavoritePage extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              // Product Name & Brand
+
+                              //product name and price
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      product.brand ?? "Unknown",
+                                      product.name,
                                       style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                       ),
-                                      overflow: TextOverflow.ellipsis,
+                                      overflow: TextOverflow.ellipsis, //... if  name is too long
                                     ),
                                     Text(
-                                      product.title,
+                                      '€${product.price.toStringAsFixed(2)}',// displays product price
                                       style: const TextStyle(
                                         fontSize: 12,
                                         color: Colors.white,
                                       ),
-                                      overflow: TextOverflow.ellipsis,
+                                      overflow: TextOverflow.ellipsis, // in case of long price  issues
                                     ),
                                   ],
                                 ),
                               ),
 
-                              // Heart Button
+                             // button to remove item from favorites
                               IconButton(
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.favorite,
                                   color: Colors.red,
                                   size: 24,

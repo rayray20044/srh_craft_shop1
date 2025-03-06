@@ -4,9 +4,8 @@ import 'package:srhcraftshop/models/product_model.dart';
 import 'package:srhcraftshop/provider/cart_provider.dart';
 import 'package:srhcraftshop/provider/favorite_provider.dart';
 
-
 class ProductDetailPage extends StatefulWidget {
-  final Product product;
+  final Product product; // store product details
 
   const ProductDetailPage({Key? key, required this.product}) : super(key: key);
 
@@ -15,17 +14,18 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
-  int quantity = 1; // Default quantity
+  int quantity = 1; // default quantity
 
   @override
   Widget build(BuildContext context) {
-    final favoriteProvider = Provider.of<FavoriteProvider>(context);
-    bool isFavorited = favoriteProvider.isFavorite(widget.product);
+    final favoriteProvider = Provider.of<FavoriteProvider>(context); // get favorite provider
+    final cartProvider = Provider.of<CartProvider>(context, listen: false); // get cart provider
+    bool isFavorited = favoriteProvider.isFavorite(widget.product); // check if product is favorited
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[200], // Light grey background
-        elevation: 0,
+        backgroundColor: Colors.grey[200], // light gray background
+        elevation: 0, // remove shadow
       ),
       body: Column(
         children: [
@@ -33,73 +33,69 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  // Product Image
+
+                  // product image
                   Container(
                     height: 250,
                     width: double.infinity,
-                    color: Colors.grey[100], // Light grey background for placeholder
+                    color: Colors.grey[100], // background color if no image
                     child: widget.product.thumbnail != null
-                        ? Image.network(widget.product.thumbnail!, fit: BoxFit.contain)
-                        : Icon(Icons.image, size: 100, color: Colors.grey),
+                        ? Image.network(
+                      widget.product.thumbnail!,
+                      fit: BoxFit.cover, // fill space
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.broken_image, color: Colors.grey, size: 100); // show icon if error
+                      },
+                    )
+                        : const Icon(Icons.image, size: 100, color: Colors.grey), // show default icon if no image
                   ),
 
-                  // Product Title & Favorite Button
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Product Details (Title, Brand, Price) in a Column
+
+                        // product details
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Product Title
                               Text(
-                                widget.product.title,
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                widget.product.name,
+                                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 4),
-
-                              // Brand Name
                               Text(
-                                'Brand: ${widget.product.brand ?? 'Unknown'}',
+                                'Category: ${widget.product.category}', // show category
                                 style: const TextStyle(fontSize: 16, color: Colors.grey),
                               ),
                               const SizedBox(height: 8),
-
-                              // Product Price (Now aligned to the left)
                               Text(
-                                '€${widget.product.price.toStringAsFixed(2)}',
+                                '€${widget.product.price.toStringAsFixed(2)}', // format price
                                 style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF0069A6),
-                                ),
+                                    fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF0069A6)),
                               ),
                             ],
                           ),
                         ),
 
-                        // Favorite Button (Heart)
+                        // favorite button
                         IconButton(
                           icon: Icon(
-                            isFavorited ? Icons.favorite : Icons.favorite_border,
-                            color: isFavorited ? Colors.red : Colors.black, // Red when favorited
+                            isFavorited ? Icons.favorite : Icons.favorite_border, // filled or empty heart
+                            color: isFavorited ? Colors.red : Colors.black,
                             size: 28,
                           ),
                           onPressed: () {
-                            favoriteProvider.toggleFavorite(widget.product);
+                            favoriteProvider.toggleFavorite(widget.product); // add or remove favorite
                           },
                         ),
                       ],
                     ),
                   ),
 
-                  // Product Description
+                  // product description
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                     child: Text(
@@ -112,15 +108,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ),
           ),
 
-          // Quantity Selector
+          // plus minus part for the qauntity
           Container(
             padding: const EdgeInsets.all(16.0),
             decoration: const BoxDecoration(
-              color: Color(0xFF999999),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
+              color: Color(0xFF999999), // gray background
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
             ),
             child: Column(
               children: [
@@ -133,20 +126,22 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
                     Row(
                       children: [
+                        // decrease quantity button
                         IconButton(
                           icon: const Icon(Icons.remove, color: Colors.white),
                           onPressed: () {
                             if (quantity > 1) {
                               setState(() {
-                                quantity--;
+                                quantity--; // - quantity
                               });
                             }
                           },
                         ),
+                        // display selected quantity
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Color(0xFFACACAC),
+                            color: const Color(0xFFACACAC), // gray box for number
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -154,11 +149,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
                         ),
+                        // increase quantity button
                         IconButton(
                           icon: const Icon(Icons.add, color: Colors.white),
                           onPressed: () {
                             setState(() {
-                              quantity++;
+                              quantity++; // + quantity
                             });
                           },
                         ),
@@ -170,37 +166,31 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ),
           ),
 
-          // Add to Cart Button (Full Width with Rounded Edges)
+          // add to cart button
           Container(
-            width: double.infinity, // Full-width background behind button
-            color: Color(0xFF999999), // Background color behind button
-            padding: const EdgeInsets.only(top: 1), // Spacing inside background
+            width: double.infinity,
+            color: const Color(0xFF999999),
+            padding: const EdgeInsets.only(top: 1),
             child: SizedBox(
-              width: double.infinity, // Button stretches across entire screen
-              height: 80, // Adjust height as needed
+              width: double.infinity,
+              height: 80,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFBC5D5D),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+                  backgroundColor: const Color(0xFFBC5D5D),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
-                icon: const Icon(Icons.shopping_cart, color: Colors.white, size: 28), // Shopping cart icon
+                icon: const Icon(Icons.shopping_cart, color: Colors.white, size: 28),
                 label: const Text(
                   'Add to cart',
                   style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
                 onPressed: () {
-                  Provider.of<CartProvider>(context, listen: false).addItem(
-                    widget.product.id.toString(),
-                    widget.product.title,
-                    widget.product.price,
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('${widget.product.title} added to cart!'),
-                      duration: const Duration(seconds: 2),
-                    ),
+                  cartProvider.addItem(
+                    widget.product.id.toString(), // product id
+                    widget.product.name, // product name
+                    widget.product.price, // product price
+                    quantity: quantity, // selected quantity
+                    thumbnail: widget.product.thumbnail, // product image
                   );
                 },
               ),

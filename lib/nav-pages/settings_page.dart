@@ -18,8 +18,8 @@ class SettingsPage extends StatelessWidget {
             color: Color(0xFFE8E5E8),
           ),
         ),
-        centerTitle: true, // Center the title
-        automaticallyImplyLeading: false, // Remove the default back button
+        centerTitle: true,
+        automaticallyImplyLeading: false,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(30.0),
@@ -29,7 +29,7 @@ class SettingsPage extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          // Profile Card
+
           Container(
             padding: const EdgeInsets.all(16),
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -39,7 +39,6 @@ class SettingsPage extends StatelessWidget {
             ),
             child: const Row(
               children: [
-                // Profile Picture
                 CircleAvatar(
                   radius: 30,
                   backgroundColor: Colors.grey,
@@ -50,7 +49,6 @@ class SettingsPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 16),
-                // Name
                 Text(
                   'Rayan Alloush',
                   style: TextStyle(
@@ -62,7 +60,6 @@ class SettingsPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          // Account Settings Section
           const SettingsSection(
             title: "Account Settings",
             items: [
@@ -90,7 +87,6 @@ class SettingsPage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          // More Section
           const SettingsSection(
             title: "More",
             items: [
@@ -113,7 +109,6 @@ class SettingsPage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          // Notification Preferences
           const SettingsSection(
             title: "Notification Preferences",
             items: [
@@ -134,7 +129,6 @@ class SettingsPage extends StatelessWidget {
   }
 }
 
-// Reusable Components for Settings Page
 class SettingsSection extends StatelessWidget {
   final String title;
   final List<Widget> items;
@@ -192,7 +186,7 @@ class SettingsItem extends StatelessWidget {
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
       ),
       trailing: trailing ??
-          const Icon(Icons.chevron_right, color: Colors.grey), // Default icon
+          const Icon(Icons.chevron_right, color: Colors.grey),
     );
   }
 }

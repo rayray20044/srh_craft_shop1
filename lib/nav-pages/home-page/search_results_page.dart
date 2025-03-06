@@ -3,8 +3,8 @@ import 'package:srhcraftshop/models/product_model.dart';
 import 'package:srhcraftshop/widgets/product_tile.dart';
 
 class SearchResultsPage extends StatelessWidget {
-  final String searchQuery;
-  final List<Product> searchResults;
+  final String searchQuery; // words for search
+  final List<Product> searchResults; // list of products for  search
 
   const SearchResultsPage({
     super.key,
@@ -19,7 +19,10 @@ class SearchResultsPage extends StatelessWidget {
         title: Text('Search Results for "$searchQuery"'),
       ),
       body: searchResults.isEmpty
+
+      // if no products match the search
           ? const Center(child: Text('No products found.'))
+      // if found display in a grid
           : GridView.builder(
         padding: const EdgeInsets.all(16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -30,7 +33,7 @@ class SearchResultsPage extends StatelessWidget {
         ),
         itemCount: searchResults.length,
         itemBuilder: (context, index) {
-          return ProductTile(product: searchResults[index]);
+          return ProductTile(product: searchResults[index]); //display each product
         },
       ),
     );
