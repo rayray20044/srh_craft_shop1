@@ -14,12 +14,15 @@ class Pickup {
   // converts a json object into a pickup one
   factory Pickup.fromJson(Map<String, dynamic> json) {
     return Pickup(
-      id: json['id'].toString(),
-      documentId: json['documentId'], // gets documentid from json
-      progress: json['progress'], // gets pickup status from json
-      createdAt: DateTime.parse(json['createdAt']), // converts timestamp string to DateTime
+      id: json['id']?.toString() ?? '', // Ensure id is never null
+      documentId: json['documentId']?.toString() ?? 'Unknown', // Handle possible null
+      progress: json['progress']?.toString() ?? 'Pending', // Default status if null
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now()
+          : DateTime.now(), // Fallback to current time if parsing fails
     );
   }
+
 
   // converts a Pickup object into a json map for api requests
   Map<String, dynamic> toJson() {
