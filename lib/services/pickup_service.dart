@@ -22,7 +22,7 @@ class PickupService {
       headers: await _getHeaders(),
     );
 
-    print("📦 Pickup API Response: ${response.body}"); // debug output
+    print(" Pickup API Response: ${response.body}"); // debug output
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = jsonDecode(response.body);
@@ -30,11 +30,11 @@ class PickupService {
       if (data.containsKey('data')) {
         return Pickup.fromJson(data['data']); // return pickup object
       } else {
-        print("🚨 Unexpected Pickup API Response: ${response.body}");
+        print(" Unexpected Pickup API Response: ${response.body}");
         return null;
       }
     } else {
-      print("🚨 Failed to start pickup: ${response.statusCode} - ${response.body}");
+      print(" Failed to start pickup: ${response.statusCode} - ${response.body}");
       return null;
     }
   }
@@ -46,7 +46,7 @@ class PickupService {
       headers: await _getHeaders(),
     );
 
-    print("📦 Pickup Status Response: ${response.body}"); // debug output
+    print(" Pickup Status Response: ${response.body}"); // debug output
 
     if (response.statusCode == 200) {
       return Pickup.fromJson(json.decode(response.body)); // return pickup status
@@ -67,10 +67,11 @@ class PickupService {
     if (response.statusCode == 200) {
       return true; // pickup completed successfully
     } else {
-      print("🚨 Failed to complete pickup: ${response.statusCode} - ${response.body}");
+      print(" Failed to complete pickup: ${response.statusCode} - ${response.body}");
       return false;
     }
   }
 }
+
 
 

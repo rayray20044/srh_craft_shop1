@@ -22,7 +22,7 @@ class SuccessfulPurchasePage extends StatefulWidget {
 
 class _SuccessfulPurchasePageState extends State<SuccessfulPurchasePage> {
   final PickupService pickupService = PickupService(); // pickup service instance
-  String pickupStatus = "pending"; // track pickup status
+  String pickupStatus = "pending";  // track pickup status
   Timer? _statusTimer; // timer for checking pickup status
 
   @override

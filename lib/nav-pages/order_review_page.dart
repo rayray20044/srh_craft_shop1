@@ -27,7 +27,7 @@ class _OrderReviewPageState extends State<OrderReviewPage> {
   final PickupService pickupService = PickupService();
   bool isLoading = false;
 
-  // list of available lockers
+  // List of available lockers with their details
   final List<Map<String, dynamic>> lockers = [
     {
       'id': 'Locker #1',
@@ -49,30 +49,28 @@ class _OrderReviewPageState extends State<OrderReviewPage> {
     },
   ];
 
-  // opens the payment method  and updates the  method
+  // select payment method and update ui
   void _selectPaymentMethod() async {
     final selectedMethod = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PaymentMethodPage(
-          orderId: "ORDER_1234", // placeholder orderid
-          price: double.tryParse(widget.totalPrice ?? "0") ?? 0, // converts total price to double
-          cabinetNumber: selectedLocker ?? "Locker #1", // sets locker if not selected
+          orderId: "ORDER_1234",
+          price: double.tryParse(widget.totalPrice ?? "0") ?? 0,
+          cabinetNumber: selectedLocker ?? "Locker #1",
         ),
       ),
     );
 
     if (selectedMethod != null) {
       setState(() {
-        selectedPaymentMethod = selectedMethod; // updates selected payment method
+        selectedPaymentMethod = selectedMethod;
       });
     }
   }
 
-  // confirms the order before pickup process
+  // order before pickup
   void _confirmOrder() async {
-
-    // checks if a locker and payment method are selected before proceeding
     if (selectedLocker == null || selectedPaymentMethod == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("❌ Please select a locker and payment method first!")),
@@ -80,45 +78,45 @@ class _OrderReviewPageState extends State<OrderReviewPage> {
       return;
     }
 
-    setState(() => isLoading = true); // sets loading to true to disable interactions
+    setState(() => isLoading = true);
 
     try {
-      // gets the cart items from provider
+
+      // cart items from provider
       var cart = Provider.of<CartProvider>(context, listen: false);
 
-      // converts cart items into the format required by the order service
+      //convert cart items to order format
       List<Map<String, dynamic>> cartItems = cart.items.values.map((item) => {
-        "product": item.id, // product id
-        "quantity": item.quantity, // quantity of the product
+        "product": item.id,
+        "quantity": item.quantity,
         "price": {
-          "netPrice": item.price, // price before tax
-          "currency": "EUR", // currency used for payment
-          "vatRate": 0.19 // value-added tax rate
+          "netPrice": item.price,
+          "currency": "EUR",
+          "vatRate": 0.19
         }
       }).toList();
 
-      // sends the order to the backend and gets an order document id
       String? orderDocumentId = await OrderService.createOrder(cartItems);
       if (orderDocumentId == null) {
         throw Exception("Failed to create order.");
       }
 
-      print("✅ Order Created: $orderDocumentId"); // prints success message
+      print("✅ Order Created: $orderDocumentId");
 
-      // starts the pickup process for the created order
+      //pickup process
       Pickup? pickup = await pickupService.startPickup(orderDocumentId);
 
       if (pickup != null) {
-        print("✅ Pickup Created: ${pickup.id}"); // prints success message for pickup creation
+        print("✅ Pickup Created: ${pickup.id}");
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => SuccessfulPurchasePage(
-              pickup: pickup, // passes pickup details to the success page
-              totalPrice: cart.totalPrice, // passes total price
+              pickup: pickup,
+              totalPrice: cart.totalPrice,
               productImages: cart.items.values
                   .map((item) => item.thumbnail ?? 'https://via.placeholder.com/150')
-                  .toList(), // collects product images, using a placeholder if missing
+                  .toList(),
             ),
           ),
         );
@@ -126,15 +124,14 @@ class _OrderReviewPageState extends State<OrderReviewPage> {
         throw Exception("Error starting pickup.");
       }
     } catch (e) {
-      print("Error in _confirmOrder: $e"); // logs error message
+      print("Error in _confirmOrder: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("$e")), // displays error message to the user
+        SnackBar(content: Text("$e")),
       );
     } finally {
-      setState(() => isLoading = false); // sets loading to false after the process completes
+      setState(() => isLoading = false);
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -333,7 +330,6 @@ class _OrderReviewPageState extends State<OrderReviewPage> {
       ),
     );
   }
-
 
   Widget _buildProductItem(String name, String imagePath) {
     return Column(
